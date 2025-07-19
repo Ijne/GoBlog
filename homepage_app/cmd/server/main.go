@@ -24,6 +24,9 @@ func main() {
 	r.Use(middleware.Logger)
 
 	r.With(middlewares.CheckAuth).Handle("/", http.HandlerFunc(homepage.HomepageHandler))
+	r.Handle("/registration", http.HandlerFunc(homepage.RegisterHandler))
+	r.Handle("/login", http.HandlerFunc(homepage.LoginHandler))
+	r.Handle("/logout", http.HandlerFunc(homepage.LogoutHandler))
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), r); err != nil {
 		log.Fatalf("Error starting server: %v", err)

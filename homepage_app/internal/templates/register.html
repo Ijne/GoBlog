@@ -6,7 +6,7 @@
                 <h4 style="margin: 0;">Регистрация</h4>
             </div>
             <div class="card-body">
-                <form action="/register" method="POST" style="margin-bottom: 1.5rem;">
+                <form id="registerForm" onsubmit="return submitForm(event)" style="margin-bottom: 1.5rem;">
                     <div style="margin-bottom: 1rem;">
                         <label for="username" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Имя пользователя</label>
                         <input type="text" class="form-control" id="username" name="username" required>
@@ -26,10 +26,53 @@
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
                 </form>
                 <div style="text-align: center;">
-                    <p style="margin: 0;">Уже есть аккаунт? <a href="/login" style="color: var(--primary-color);">Войдите</a></p>
+                    <p style="margin: 0;">Уже есть аккаунт? <a href="/?action=login" style="color: var(--primary-color);">Войдите</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+function submitForm(e) {
+    e.preventDefault();
+    console.log("Form submitted"); // Debug log
+    
+    const formData = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        confirm_password: document.getElementById('confirm_password').value
+    };
+    
+    console.log("Form data:", formData); // Debug log
+
+    fetch('/registration', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => {
+        console.log("Response received:", response); // Debug log
+        console.log("Response status:", response.status); // Debug log
+        return response.json();
+    })
+    .then(data => {
+        console.log("Data received:", data); // Debug log
+        if (data.redirect) {
+            console.log("Redirecting to:", data.redirect); // Debug log
+            window.location.href = data.redirect;
+        } else {
+            console.log("No redirect found in response"); // Debug log
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Registration failed: ' + error.message);
+    });
+    
+    return false;
+}
+</script>
 {{end}}

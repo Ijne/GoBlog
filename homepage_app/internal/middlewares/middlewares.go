@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Ijne/homepage_app/internal/models"
@@ -10,9 +9,8 @@ import (
 
 func CheckAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := tools.ExtractTokenFromCookie(r)
-
-		if token == "" {
+		_, err := tools.GetCookieClaims(r)
+		if err != nil {
 			action := r.URL.Query().Get("action")
 			data := models.User{ID: 0, Username: "", Email: ""}
 			switch action {
@@ -23,13 +21,6 @@ func CheckAuth(next http.Handler) http.Handler {
 			default:
 				tools.RenderTemplate(w, "register.html", data)
 			}
-			return
-		}
-
-		claims, err := tools.ValidateToken(token)
-		if err != nil || claims == nil {
-			log.Println(err)
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 

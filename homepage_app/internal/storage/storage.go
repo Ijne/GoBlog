@@ -54,8 +54,8 @@ func initDB() {
 func AddUser(ctx context.Context, username, email, password string) (int32, error) {
 	once.Do(initDB)
 
-	if err := dbPool.QueryRow(ctx, "SELECT 1 FROM users WHERE username = $1", username).Scan(new(int)); err == nil {
-		return 0, fmt.Errorf("username %s already exists", username)
+	if err := dbPool.QueryRow(ctx, "SELECT 1 FROM users WHERE email = $1", email).Scan(new(int)); err == nil {
+		return 0, fmt.Errorf("email %s already exists", email)
 	}
 
 	if !tools.ValidateEmail(email) {
@@ -68,7 +68,7 @@ func AddUser(ctx context.Context, username, email, password string) (int32, erro
 	}
 
 	var id int32
-	if err := dbPool.QueryRow(ctx, "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id", username, email, passwordHash).Scan(&id); err != nil {
+	if err := dbPool.QueryRow(ctx, "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id", username, email, passwordHash).Scan(&id); err != nil {
 		return 0, fmt.Errorf("error adding user: %w", err)
 	}
 
@@ -79,7 +79,7 @@ func GetUser(ctx context.Context, id int32) (*models.User, error) {
 	once.Do(initDB)
 
 	var user models.User
-	if err := dbPool.QueryRow(ctx, "SELECT id, username, email FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email); err != nil {
+	if err := dbPool.QueryRow(ctx, "SELECT id, name, email FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email); err != nil {
 		return nil, fmt.Errorf("error retrieving user: %w", err)
 	}
 
@@ -95,4 +95,26 @@ func GetUserPassword(ctx context.Context, id int32) (string, error) {
 	}
 
 	return password, nil
+}
+
+func GetUserID(ctx context.Context, email string) (int32, error) {
+	once.Do(initDB)
+
+	var id int32
+	if err := dbPool.QueryRow(ctx, "SELECT id FROM users WHERE email = $1", email).Scan(&id); err != nil {
+		return 0, fmt.Errorf("error retrieving user ID: %w", err)
+	}
+
+	return id, nil
+}
+
+func GetUsername(ctx context.Context, id int32) (string, error) {
+	once.Do(initDB)
+
+	var name string
+	if err := dbPool.QueryRow(ctx, "SELECT name FROM users WHERE id = $1", id).Scan(&name); err != nil {
+		return "", fmt.Errorf("error retrieving name: %w", err)
+	}
+
+	return name, nil
 }
