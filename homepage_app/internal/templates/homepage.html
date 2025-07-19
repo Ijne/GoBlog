@@ -1,0 +1,13 @@
+{{define "content"}}
+<div class="jumbotron">
+    <h1 class="display-4">Добро пожаловать!</h1>
+    <p class="lead">Это главная страница нашего сайта.</p>
+    <hr class="my-4">
+    <p>Здесь вы можете найти много интересного.</p>
+    {{if not .CurrentUser}}
+    <p class="lead">
+        <a class="btn btn-primary btn-lg" href="/register" role="button">Зарегистрироваться</a>
+    </p>
+    {{end}}
+</div>
+{{end}}

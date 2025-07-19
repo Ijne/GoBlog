@@ -1,0 +1,35 @@
+{{define "content"}}
+<div style="display: flex; justify-content: center;">
+    <div style="width: 100%; max-width: 500px;">
+        <div class="card">
+            <div class="card-header">
+                <h4 style="margin: 0;">Регистрация</h4>
+            </div>
+            <div class="card-body">
+                <form action="/register" method="POST" style="margin-bottom: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <label for="username" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Имя пользователя</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="confirm_password" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Подтвердите пароль</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+                </form>
+                <div style="text-align: center;">
+                    <p style="margin: 0;">Уже есть аккаунт? <a href="/login" style="color: var(--primary-color);">Войдите</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

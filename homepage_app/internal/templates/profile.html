@@ -1,0 +1,35 @@
+{{define "content"}}
+<div style="display: flex; gap: 20px;">
+    <div style="flex: 1;">
+        <div class="card">
+            <div class="card-body" style="display: flex; flex-direction: column; align-items: center;">
+                <img src="https://ui-avatars.com/api/?name={{.CurrentUser.Username}}&size=150&background=4e73df&color=fff" 
+                     class="rounded-circle mb-3" alt="Аватар" style="width: 150px; height: 150px;">
+                <h5 style="font-size: 1.25rem; margin-bottom: 0.5rem;">{{.CurrentUser.Username}}</h5>
+                <p style="color: #858796; font-size: 0.875rem;">Участник с {{.CurrentUser.CreatedAt}}</p>
+            </div>
+        </div>
+    </div>
+    <div style="flex: 2;">
+        <div class="card">
+            <div class="card-header">
+                <h5 style="margin: 0;">Информация о профиле</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                        <input type="email" class="form-control" id="email" value="{{.CurrentUser.Email}}" readonly 
+                               style="background-color: #f8f9fc; cursor: not-allowed;">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="fullName" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Полное имя</label>
+                        <input type="text" class="form-control" id="fullName" value="{{.CurrentUser.FullName}}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Обновить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
