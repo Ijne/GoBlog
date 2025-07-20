@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/Ijne/homepage_app/internal/models"
-	"github.com/Ijne/homepage_app/internal/tools"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -48,73 +47,65 @@ func initDB() {
 	}
 
 	dbPool = pool
-	log.Println("Database connection pool initialized successfully")
+	log.Println("Database connection established")
 }
 
-func AddUser(ctx context.Context, username, email, password string) (int32, error) {
-	once.Do(initDB)
+type UserRepository struct {
+	dbPool *pgxpool.Pool
+}
 
-	if err := dbPool.QueryRow(ctx, "SELECT 1 FROM users WHERE email = $1", email).Scan(new(int)); err == nil {
-		return 0, fmt.Errorf("email %s already exists", email)
-	}
+func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
+	return &UserRepository{dbPool: pool}
+}
 
-	if !tools.ValidateEmail(email) {
-		return 0, fmt.Errorf("invalid email format: %s", email)
-	}
-
-	passwordHash, err := tools.PasswordToHash(password)
-	if err != nil {
-		return 0, fmt.Errorf("error hashing password: %w", err)
-	}
-
+func (ur *UserRepository) Add(ctx context.Context, user models.User) (int32, error) {
 	var id int32
-	if err := dbPool.QueryRow(ctx, "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id", username, email, passwordHash).Scan(&id); err != nil {
-		return 0, fmt.Errorf("error adding user: %w", err)
+	err := ur.dbPool.QueryRow(ctx, "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id",
+		user.Username, user.Email, user.Password).Scan(&id)
+	if err != nil {
+		return 0, fmt.Errorf("error inserting user: %w", err)
 	}
-
 	return id, nil
 }
 
-func GetUser(ctx context.Context, id int32) (*models.User, error) {
-	once.Do(initDB)
-
+func (ur *UserRepository) Get(ctx context.Context, id int32) (*models.User, error) {
 	var user models.User
-	if err := dbPool.QueryRow(ctx, "SELECT id, name, email FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email); err != nil {
-		return nil, fmt.Errorf("error retrieving user: %w", err)
+	err := ur.dbPool.QueryRow(ctx, "SELECT id, username, email, password FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching user by id: %w", err)
 	}
-
 	return &user, nil
 }
 
-func GetUserPassword(ctx context.Context, id int32) (string, error) {
+// MAIN ADD AND GET FUNCTIONS AND SPECIALS
+func Add(ctx context.Context, data interface{}) (int32, error) {
 	once.Do(initDB)
-
-	var password string
-	if err := dbPool.QueryRow(ctx, "SELECT password FROM users WHERE id = $1", id).Scan(&password); err != nil {
-		return "", fmt.Errorf("error retrieving user password: %w", err)
+	user, ok := data.(models.User)
+	if ok {
+		return NewUserRepository(dbPool).Add(ctx, user)
 	}
-
-	return password, nil
+	return 0, fmt.Errorf("invalid data type, expected models.User")
 }
 
-func GetUserID(ctx context.Context, email string) (int32, error) {
+func Get(ctx context.Context, id int32, t string) (*models.User, error) {
 	once.Do(initDB)
-
-	var id int32
-	if err := dbPool.QueryRow(ctx, "SELECT id FROM users WHERE email = $1", email).Scan(&id); err != nil {
-		return 0, fmt.Errorf("error retrieving user ID: %w", err)
+	switch t {
+	case "user":
+		return NewUserRepository(dbPool).Get(ctx, id)
+	default:
+		log.Println("Invalid type for Get method:", t)
+		return nil, fmt.Errorf("invalid type, expected 'user'")
 	}
-
-	return id, nil
 }
 
-func GetUsername(ctx context.Context, id int32) (string, error) {
+func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	once.Do(initDB)
-
-	var name string
-	if err := dbPool.QueryRow(ctx, "SELECT name FROM users WHERE id = $1", id).Scan(&name); err != nil {
-		return "", fmt.Errorf("error retrieving name: %w", err)
+	var user models.User
+	err := dbPool.QueryRow(ctx, "SELECT id, username, email, password FROM users WHERE email = $1", email).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching user by email: %w", err)
 	}
-
-	return name, nil
+	return &user, nil
 }
+
+//
