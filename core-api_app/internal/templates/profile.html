@@ -1,0 +1,144 @@
+{{define "content"}}
+<div class="profile-container">
+    <!-- Шапка профиля -->
+    <div class="profile-header p-4 mb-4 rounded shadow-sm">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="display-6 fw-bold">
+                <i class="bi bi-person-circle me-2"></i>Профиль: {{.User.Username}}
+            </h1>
+            <a href="/" class="btn btn-outline-primary">
+                <i class="bi bi-house-door"></i> На главную
+            </a>
+        </div>
+        <div class="profile-stats mt-3">
+            <span class="badge bg-light text-dark me-2">
+                <i class="bi bi-postcard"></i> Постов: {{len .News}}
+            </span>
+        </div>
+    </div>
+
+    <!-- Блок создания поста -->
+    <div class="create-post mb-5 p-4 rounded shadow-sm">
+        <h3 class="mb-3"><i class="bi bi-plus-circle"></i> Создать новый пост</h3>
+        <form id="createPostForm">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="postTitle" placeholder="Заголовок" required>
+            </div>
+            <div class="mb-3">
+                <textarea class="form-control" id="postContent" rows="3" placeholder="Текст поста..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i> Опубликовать
+            </button>
+        </form>
+        <div id="postResponse" class="mt-3"></div>
+    </div>
+
+    <!-- Блок моих постов -->
+    <div class="my-posts">
+        <h3 class="mb-4"><i class="bi bi-collection"></i> Мои посты</h3>
+        
+        {{if .News}}
+            <div class="posts-list">
+                {{range .News}}
+                <div class="post-card card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">{{.Title}}</h5>
+                            <small class="text-muted">{{.CreatedAt.Format "02.01.2006 15:04"}}</small>
+                        </div>
+                        <p class="card-text">{{.Body}}</p>
+                        <div class="d-flex justify-content-end">
+                            <form action="/news?action=delete/{{.ID}}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i> Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+        {{else}}
+            <div class="empty-posts alert alert-light rounded shadow-sm text-center py-5">
+                <i class="bi bi-info-circle-fill text-muted" style="font-size: 2.5rem;"></i>
+                <h4 class="mt-3 text-muted">У вас пока нет постов</h4>
+                <p class="text-muted">Создайте свой первый пост выше</p>
+            </div>
+        {{end}}
+    </div>
+</div>
+<script>
+document.getElementById('createPostForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const responseDiv = document.getElementById('postResponse');
+    responseDiv.innerHTML = '';
+    
+    try {
+        const response = await fetch('/news?action=add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: document.getElementById('postTitle').value,
+                body: document.getElementById('postContent').value
+            })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            // Обновляем список постов или делаем редирект
+            window.location.reload();
+        } else {
+            throw new Error(result.error || 'Ошибка сервера');
+        }
+    } catch (error) {
+        responseDiv.innerHTML = `
+            <div class="alert alert-danger">
+                Ошибка: ${error.message}
+            </div>
+        `;
+    }
+});
+</script>
+
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left: 5px solid #0d6efd;
+    }
+    
+    .create-post {
+        background-color: #f8f9fa;
+        border: 1px dashed #adb5bd;
+    }
+    
+    .post-card {
+        transition: transform 0.2s;
+        border-radius: 8px;
+    }
+    
+    .post-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+    
+    .empty-posts {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .form-control, .btn {
+        border-radius: 8px;
+    }
+</style>
+{{end}}

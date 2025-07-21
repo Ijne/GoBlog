@@ -3,16 +3,22 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/Ijne/homepage_app/internal/models"
-	"github.com/Ijne/homepage_app/internal/tools"
+	"github.com/Ijne/core-api_app/internal/models"
+	"github.com/Ijne/core-api_app/internal/tools"
 )
 
 func CheckAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, err := tools.GetCookieClaims(r)
+		_, err := tools.GetUserClaimsFromCookie(r)
 		if err != nil {
 			action := r.URL.Query().Get("action")
-			data := models.User{ID: 0, Username: "", Email: ""}
+			var data = struct {
+				User models.User
+				News []models.News
+			}{
+				User: models.User{ID: 0},
+				News: []models.News{},
+			}
 			switch action {
 			case "login":
 				tools.RenderTemplate(w, "login.html", data)

@@ -10,9 +10,10 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 
-	"github.com/Ijne/homepage_app/internal/handlers/auth"
-	"github.com/Ijne/homepage_app/internal/handlers/homepage"
-	"github.com/Ijne/homepage_app/internal/middlewares"
+	"github.com/Ijne/core-api_app/internal/handlers/auth"
+	"github.com/Ijne/core-api_app/internal/handlers/homepage"
+	"github.com/Ijne/core-api_app/internal/handlers/profile"
+	"github.com/Ijne/core-api_app/internal/middlewares"
 )
 
 func main() {
@@ -28,6 +29,8 @@ func main() {
 	r.Handle("/registration", http.HandlerFunc(auth.RegisterHandler))
 	r.Handle("/login", http.HandlerFunc(auth.LoginHandler))
 	r.Handle("/logout", http.HandlerFunc(auth.LogoutHandler))
+	r.With(middlewares.CheckAuth).Handle("/profile", http.HandlerFunc(profile.ProfileHandler))
+	r.Handle("/news", http.HandlerFunc(profile.NewsHandler))
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), r); err != nil {
 		log.Fatalf("Error starting server: %v", err)

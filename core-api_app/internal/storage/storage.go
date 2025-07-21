@@ -8,7 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Ijne/homepage_app/internal/models"
+	"github.com/Ijne/core-api_app/internal/models"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -50,6 +51,7 @@ func initDB() {
 	log.Println("Database connection established")
 }
 
+// USER TABLE METHODS
 type UserRepository struct {
 	dbPool *pgxpool.Pool
 }
@@ -69,6 +71,7 @@ func (ur *UserRepository) Add(ctx context.Context, user models.User) (int32, err
 }
 
 func (ur *UserRepository) Get(ctx context.Context, id int32) (*models.User, error) {
+	once.Do(initDB)
 	var user models.User
 	err := ur.dbPool.QueryRow(ctx, "SELECT id, username, email, password FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
 	if err != nil {
@@ -77,6 +80,53 @@ func (ur *UserRepository) Get(ctx context.Context, id int32) (*models.User, erro
 	return &user, nil
 }
 
+//
+
+// NEWS TABLE METHODS
+type NewsRepository struct {
+	dbPool *pgxpool.Pool
+}
+
+func NewNewsRepository(pool *pgxpool.Pool) *NewsRepository {
+	return &NewsRepository{dbPool: pool}
+}
+
+func (nr *NewsRepository) Add(ctx context.Context, news models.News) (int32, error) {
+	once.Do(initDB)
+	var id int32
+	if err := dbPool.QueryRow(context.Background(), "INSERT INTO news (title, body, owner, created_at) VALUES ($1, $2, $3, $4) RETURNING id", news.Title, news.Body, news.Owner, news.CreatedAt).Scan(&id); err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("error inserting news: %w", err)
+	}
+	return id, nil
+}
+
+func (nr *NewsRepository) Get(ctx context.Context, id int32) ([]models.News, error) {
+	once.Do(initDB)
+	var news []models.News
+	var rows pgx.Rows
+	var err error
+	if id == 0 {
+		rows, err = nr.dbPool.Query(ctx, "SELECT id, title, body, created_at FROM news ORDER BY created_at DESC")
+	} else {
+		rows, err = nr.dbPool.Query(ctx, "SELECT id, title, body, created_at FROM news WHERE owner = $1 ORDER BY created_at DESC", id)
+	}
+	if err != nil {
+		return []models.News{}, fmt.Errorf("error fetching user by id: %w", err)
+	}
+	for rows.Next() {
+		var n models.News
+		if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.CreatedAt); err != nil {
+			log.Println("Error with scanning news:", err)
+		}
+		news = append(news, n)
+	}
+	fmt.Println("news:", news)
+	return news, nil
+}
+
+//
+
 // MAIN ADD AND GET FUNCTIONS AND SPECIALS
 func Add(ctx context.Context, data interface{}) (int32, error) {
 	once.Do(initDB)
@@ -84,14 +134,20 @@ func Add(ctx context.Context, data interface{}) (int32, error) {
 	if ok {
 		return NewUserRepository(dbPool).Add(ctx, user)
 	}
-	return 0, fmt.Errorf("invalid data type, expected models.User")
+	news, ok := data.(models.News)
+	if ok {
+		return NewNewsRepository(dbPool).Add(ctx, news)
+	}
+	return 0, fmt.Errorf("invalid data type")
 }
 
-func Get(ctx context.Context, id int32, t string) (*models.User, error) {
+func Get(ctx context.Context, id int32, t string) (interface{}, error) {
 	once.Do(initDB)
 	switch t {
 	case "user":
 		return NewUserRepository(dbPool).Get(ctx, id)
+	case "news":
+		return NewNewsRepository(dbPool).Get(ctx, id)
 	default:
 		log.Println("Invalid type for Get method:", t)
 		return nil, fmt.Errorf("invalid type, expected 'user'")

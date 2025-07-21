@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Ijne/homepage_app/internal/models"
+	"github.com/Ijne/core-api_app/internal/models"
 	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
@@ -143,7 +143,7 @@ func MakeCookieAfterLogin(w http.ResponseWriter, id int32, username, email strin
 
 }
 
-func GetCookieClaims(r *http.Request) (models.User, error) {
+func GetUserClaimsFromCookie(r *http.Request) (models.User, error) {
 	token := ExtractTokenFromCookie(r)
 	claims, err := ValidateToken(token)
 	if err != nil || claims == nil {

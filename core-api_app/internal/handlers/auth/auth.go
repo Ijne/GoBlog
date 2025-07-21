@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Ijne/homepage_app/internal/models"
-	"github.com/Ijne/homepage_app/internal/storage"
-	"github.com/Ijne/homepage_app/internal/tools"
+	"github.com/Ijne/core-api_app/internal/models"
+	"github.com/Ijne/core-api_app/internal/storage"
+	"github.com/Ijne/core-api_app/internal/tools"
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
