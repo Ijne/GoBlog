@@ -41,7 +41,7 @@
         {{if .News}}
             <div class="posts-list">
                 {{range .News}}
-                <div class="post-card card mb-3 shadow-sm">
+                <div class="post-card card mb-3 shadow-sm" id="post-{{.ID}}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <h5 class="card-title">{{.Title}}</h5>
@@ -49,7 +49,7 @@
                         </div>
                         <p class="card-text">{{.Body}}</p>
                         <div class="d-flex justify-content-end">
-                            <form action="/news?action=delete/{{.ID}}" method="POST" class="d-inline">
+                            <form class="delete-post-form" data-id="{{.ID}}">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-trash"></i> Удалить
                                 </button>
@@ -68,7 +68,9 @@
         {{end}}
     </div>
 </div>
+
 <script>
+// Обработчик создания поста
 document.getElementById('createPostForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -76,24 +78,25 @@ document.getElementById('createPostForm').addEventListener('submit', async (e) =
     responseDiv.innerHTML = '';
     
     try {
-        const response = await fetch('/news?action=add', {
+        const response = await fetch('/news', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 title: document.getElementById('postTitle').value,
                 body: document.getElementById('postContent').value
             })
         });
 
-        const result = await response.json();
-        
         if (response.ok) {
-            // Обновляем список постов или делаем редирект
+            // Очищаем форму
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            
+            // Обновляем страницу
             window.location.reload();
         } else {
-            throw new Error(result.error || 'Ошибка сервера');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Ошибка сервера');
         }
     } catch (error) {
         responseDiv.innerHTML = `
@@ -102,6 +105,55 @@ document.getElementById('createPostForm').addEventListener('submit', async (e) =
             </div>
         `;
     }
+});
+
+// Обработчики удаления постов
+document.querySelectorAll('.delete-post-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const postId = form.dataset.id;
+        const postElement = document.getElementById(`post-${postId}`);
+        
+        if (!confirm("Вы уверены, что хотите удалить этот пост?")) return;
+
+        try {
+            const response = await fetch(`/news?id=${postId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                // Плавное исчезновение поста
+                postElement.style.transition = 'opacity 0.3s, transform 0.3s';
+                postElement.style.opacity = '0';
+                postElement.style.transform = 'translateX(100px)';
+                
+                // Полное удаление из DOM после анимации
+                setTimeout(() => {
+                    postElement.remove();
+                    
+                    // Проверяем остались ли посты
+                    if (!document.querySelector('.post-card')) {
+                        document.querySelector('.my-posts').innerHTML = `
+                            <div class="empty-posts alert alert-light rounded shadow-sm text-center py-5">
+                                <i class="bi bi-info-circle-fill text-muted" style="font-size: 2.5rem;"></i>
+                                <h4 class="mt-3 text-muted">У вас пока нет постов</h4>
+                                <p class="text-muted">Создайте свой первый пост выше</p>
+                            </div>`;
+                    }
+                    
+                    // Обновляем счетчик постов в шапке
+                    const countBadge = document.querySelector('.badge.bg-light.text-dark');
+                    const currentCount = parseInt(countBadge.textContent.split(': ')[1]);
+                    countBadge.innerHTML = `<i class="bi bi-postcard"></i> Постов: ${currentCount - 1}`;
+                }, 300);
+            } else {
+                const error = await response.text();
+                alert(`Ошибка удаления: ${error}`);
+            }
+        } catch (error) {
+            alert(`Сетевая ошибка: ${error.message}`);
+        }
+    });
 });
 </script>
 
@@ -123,7 +175,7 @@ document.getElementById('createPostForm').addEventListener('submit', async (e) =
     }
     
     .post-card {
-        transition: transform 0.2s;
+        transition: transform 0.2s, opacity 0.3s;
         border-radius: 8px;
     }
     

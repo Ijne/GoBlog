@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Ijne/core-api_app/internal/models"
@@ -53,9 +54,8 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewsHandler(w http.ResponseWriter, r *http.Request) {
-	action := r.URL.Query().Get("action")
-	switch action {
-	case "add":
+	switch r.Method {
+	case http.MethodPost:
 		var news models.News
 		if err := json.NewDecoder(r.Body).Decode(&news); err != nil {
 			log.Println(err)
@@ -76,11 +76,16 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Set("Content-type", "application/json")
-		var data = struct {
-			ok bool
-		}{
-			ok: true,
-		}
+		var data = struct{}{}
+		json.NewEncoder(w).Encode(data)
+		log.Println("Sucssesfully created news with id:", id)
+	case http.MethodDelete:
+		idStr := r.URL.Query().Get("id")
+		id, _ := strconv.ParseInt(idStr, 10, 32)
+		storage.Del(context.Background(), int32(id), "news")
+
+		w.Header().Set("Content-type", "application/json")
+		var data = struct{}{}
 		json.NewEncoder(w).Encode(data)
 		log.Println("Sucssesfully created news with id:", id)
 	default:

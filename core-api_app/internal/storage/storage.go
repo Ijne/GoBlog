@@ -71,7 +71,6 @@ func (ur *UserRepository) Add(ctx context.Context, user models.User) (int32, err
 }
 
 func (ur *UserRepository) Get(ctx context.Context, id int32) (*models.User, error) {
-	once.Do(initDB)
 	var user models.User
 	err := ur.dbPool.QueryRow(ctx, "SELECT id, username, email, password FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
 	if err != nil {
@@ -92,7 +91,6 @@ func NewNewsRepository(pool *pgxpool.Pool) *NewsRepository {
 }
 
 func (nr *NewsRepository) Add(ctx context.Context, news models.News) (int32, error) {
-	once.Do(initDB)
 	var id int32
 	if err := dbPool.QueryRow(context.Background(), "INSERT INTO news (title, body, owner, created_at) VALUES ($1, $2, $3, $4) RETURNING id", news.Title, news.Body, news.Owner, news.CreatedAt).Scan(&id); err != nil {
 		log.Println(err)
@@ -102,7 +100,6 @@ func (nr *NewsRepository) Add(ctx context.Context, news models.News) (int32, err
 }
 
 func (nr *NewsRepository) Get(ctx context.Context, id int32) ([]models.News, error) {
-	once.Do(initDB)
 	var news []models.News
 	var rows pgx.Rows
 	var err error
@@ -123,6 +120,11 @@ func (nr *NewsRepository) Get(ctx context.Context, id int32) ([]models.News, err
 	}
 	fmt.Println("news:", news)
 	return news, nil
+}
+
+func (nr *NewsRepository) Del(ctx context.Context, id int32) error {
+	_, err := dbPool.Exec(ctx, "DELETE FROM news WHERE id=$1", id)
+	return err
 }
 
 //
@@ -151,6 +153,16 @@ func Get(ctx context.Context, id int32, t string) (interface{}, error) {
 	default:
 		log.Println("Invalid type for Get method:", t)
 		return nil, fmt.Errorf("invalid type, expected 'user'")
+	}
+}
+
+func Del(ctx context.Context, id int32, t string) error {
+	once.Do(initDB)
+	switch t {
+	case "news":
+		return NewNewsRepository(dbPool).Del(ctx, id)
+	default:
+		return fmt.Errorf("method not allowed")
 	}
 }
 
