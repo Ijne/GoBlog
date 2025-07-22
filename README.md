@@ -38,12 +38,17 @@
 
 ## 🚀 Быстрый старт
 
+### Вариант 1: Запуск из исходного кода
+```bash
 git clone https://github.com/Ijne/GoBlog.git
 cd GoBlog/core-api_app
 go run cmd/server/main.go
 
-    ИЛИ
+# Сборка (из папки core-api_app)
+go build -o app.exe cmd/server/main.go
 
-app.exe
+# Запуск
+./app.exe  # Linux/Mac
+app.exe    # Windows
 
 
