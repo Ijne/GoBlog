@@ -30,7 +30,7 @@ func main() {
 	r.Handle("/login", http.HandlerFunc(auth.LoginHandler))
 	r.Handle("/logout", http.HandlerFunc(auth.LogoutHandler))
 	r.With(middlewares.CheckAuth).Handle("/profile", http.HandlerFunc(profile.ProfileHandler))
-	r.Handle("/news", http.HandlerFunc(profile.NewsHandler))
+	r.With(middlewares.CheckAuth).Handle("/news", http.HandlerFunc(profile.NewsHandler))
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), r); err != nil {
 		log.Fatalf("Error starting server: %v", err)
