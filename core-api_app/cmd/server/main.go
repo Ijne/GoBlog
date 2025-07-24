@@ -10,9 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 
-	"github.com/Ijne/core-api_app/internal/handlers/auth"
-	"github.com/Ijne/core-api_app/internal/handlers/homepage"
-	"github.com/Ijne/core-api_app/internal/handlers/profile"
+	"github.com/Ijne/core-api_app/internal/handlers"
 	"github.com/Ijne/core-api_app/internal/middlewares"
 )
 
@@ -25,12 +23,14 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	r.With(middlewares.CheckAuth).Handle("/", http.HandlerFunc(homepage.HomepageHandler))
-	r.Handle("/registration", http.HandlerFunc(auth.RegisterHandler))
-	r.Handle("/login", http.HandlerFunc(auth.LoginHandler))
-	r.Handle("/logout", http.HandlerFunc(auth.LogoutHandler))
-	r.With(middlewares.CheckAuth).Handle("/profile", http.HandlerFunc(profile.ProfileHandler))
-	r.With(middlewares.CheckAuth).Handle("/news", http.HandlerFunc(profile.NewsHandler))
+	r.With(middlewares.CheckAuth).Handle("/", http.HandlerFunc(handlers.HomepageHandler))
+	r.Handle("/registration", http.HandlerFunc(handlers.RegisterHandler))
+	r.Handle("/login", http.HandlerFunc(handlers.LoginHandler))
+	r.Handle("/logout", http.HandlerFunc(handlers.LogoutHandler))
+	r.With(middlewares.CheckAuth).Handle("/profile", http.HandlerFunc(handlers.ProfileHandler))
+	r.With(middlewares.CheckAuth).Handle("/news", http.HandlerFunc(handlers.NewsHandler))
+	r.With(middlewares.CheckAuth).Handle("/user", http.HandlerFunc(handlers.UserPageHandler))
+	r.With(middlewares.CheckAuth).Handle("/subscribe", http.HandlerFunc(handlers.SubscribeHandler))
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), r); err != nil {
 		log.Fatalf("Error starting server: %v", err)

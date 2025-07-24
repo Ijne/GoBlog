@@ -25,6 +25,20 @@
                                 </small>
                             </div>
                             
+                            <!-- Кликабельное имя автора -->
+                            <div class="news-author mb-2">
+                                <a href="/user?id={{.Owner}}" class="text-decoration-none">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary p-2">
+                                        <i class="bi bi-person-fill me-1"></i>
+                                        {{if .OwnerNAME}}
+                                            {{.OwnerNAME}}
+                                        {{else}}
+                                            Аноним
+                                        {{end}}
+                                    </span>
+                                </a>
+                            </div>
+                            
                             <div class="news-content mb-3">
                                 {{.Body}}
                             </div>

@@ -70,13 +70,13 @@ func (ur *UserRepository) Add(ctx context.Context, user models.User) (int32, err
 	return id, nil
 }
 
-func (ur *UserRepository) Get(ctx context.Context, id int32) (*models.User, error) {
+func (ur *UserRepository) Get(ctx context.Context, id int32) (models.User, error) {
 	var user models.User
-	err := ur.dbPool.QueryRow(ctx, "SELECT id, username, email, password FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	err := ur.dbPool.QueryRow(ctx, "SELECT id, username, email, password, subscribers FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.Subscribers)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching user by id: %w", err)
+		return models.User{}, fmt.Errorf("error fetching user by id: %w", err)
 	}
-	return &user, nil
+	return user, nil
 }
 
 //
@@ -104,7 +104,7 @@ func (nr *NewsRepository) Get(ctx context.Context, id int32) ([]models.News, err
 	var rows pgx.Rows
 	var err error
 	if id == 0 {
-		rows, err = nr.dbPool.Query(ctx, "SELECT id, title, body, created_at FROM news ORDER BY created_at DESC")
+		rows, err = nr.dbPool.Query(ctx, "SELECT n.*, u.username AS owner_name FROM  news n, LATERAL (SELECT username FROM users WHERE id = n.owner) u ORDER BY created_at DESC")
 	} else {
 		rows, err = nr.dbPool.Query(ctx, "SELECT id, title, body, created_at FROM news WHERE owner = $1 ORDER BY created_at DESC", id)
 	}
@@ -113,12 +113,17 @@ func (nr *NewsRepository) Get(ctx context.Context, id int32) ([]models.News, err
 	}
 	for rows.Next() {
 		var n models.News
-		if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.CreatedAt); err != nil {
-			log.Println("Error with scanning news:", err)
+		if id == 0 {
+			if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.Owner, &n.CreatedAt, &n.OwnerNAME); err != nil {
+				log.Println("Error with scanning news:", err)
+			}
+		} else {
+			if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.CreatedAt); err != nil {
+				log.Println("Error with scanning news:", err)
+			}
 		}
 		news = append(news, n)
 	}
-	fmt.Println("news:", news)
 	return news, nil
 }
 
@@ -128,6 +133,41 @@ func (nr *NewsRepository) Del(ctx context.Context, id int32) error {
 }
 
 //
+
+//  SUBSCRIPTIONS TABLE METHODS
+
+func GetSubscription(ctx context.Context, u_id, t_id int32) bool {
+	once.Do(initDB)
+	var exists bool
+	err := dbPool.QueryRow(
+		ctx,
+		"SELECT EXISTS(SELECT 1 FROM subscriptions WHERE subscriber_id=$1 AND target_id=$2)",
+		u_id,
+		t_id,
+	).Scan(&exists)
+
+	return err == nil && exists
+}
+
+func AddSubscription(ctx context.Context, u_id, t_id int32) error {
+	once.Do(initDB)
+	_, err_1 := dbPool.Exec(ctx, "INSERT INTO subscriptions (subscriber_id, target_id, created_at) VALUES ($1, $2, $3)", u_id, t_id, time.Now())
+	_, err_2 := dbPool.Exec(ctx, "UPDATE users SET subscribers = subscribers + 1 WHERE id=$1", t_id)
+	if err_1 != nil {
+		return err_1
+	}
+	return err_2
+}
+
+func DelSubscription(ctx context.Context, u_id, t_id int32) error {
+	once.Do(initDB)
+	_, err_1 := dbPool.Exec(ctx, "DELETE FROM subscriptions WHERE subscriber_id=$1 AND target_id=$2", u_id, t_id)
+	_, err_2 := dbPool.Exec(ctx, "UPDATE users SET subscribers = subscribers - 1 WHERE id=$1", t_id)
+	if err_1 != nil {
+		return err_1
+	}
+	return err_2
+}
 
 // MAIN ADD AND GET FUNCTIONS AND SPECIALS
 func Add(ctx context.Context, data interface{}) (int32, error) {

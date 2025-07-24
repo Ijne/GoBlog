@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/windows/servercore:1809
+FROM debian:bookworm-slim
 
 WORKDIR /app
 COPY app.exe /app/server
