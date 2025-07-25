@@ -1,0 +1,110 @@
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 5px solid #0d6efd;
+}
+
+.profile-header h1 {
+    margin-bottom: 1.5rem;
+    font-size: 2.2rem;
+}
+
+.profile-stats {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.profile-stats .badge {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-right: 0.8rem;
+    border-radius: 50px;
+}
+
+.profile-stats .badge i {
+    margin-right: 0.4rem;
+}
+
+.create-post {
+    background-color: #f8f9fa;
+    border: 1px dashed #adb5bd;
+    border-radius: 8px;
+}
+
+.my-posts {
+    margin-top: 3rem;
+}
+
+.my-posts h3 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.post-card {
+    transition: transform 0.2s, opacity 0.3s;
+    border-radius: 8px;
+    border: none;
+    overflow: hidden;
+}
+
+.post-card .card-body {
+    padding: 1.5rem;
+}
+
+.post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.empty-posts {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+}
+
+.empty-posts h4 {
+    font-weight: 400;
+    font-size: 1.3rem;
+}
+
+.form-control, .btn {
+    border-radius: 8px;
+}
+
+.subscription-item {
+    transition: transform 0.2s;
+}
+
+.subscription-item:hover {
+    transform: translateX(5px);
+    background-color: #f8f9fa;
+}
+
+/* Модальное окно */
+.modal-content {
+    border-radius: 10px;
+}
+
+.list-group-item {
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.post-card {
+    animation: fadeIn 0.3s ease-in;
+}

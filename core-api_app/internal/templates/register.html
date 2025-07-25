@@ -1,78 +1,38 @@
 {{define "content"}}
-<div style="display: flex; justify-content: center;">
-    <div style="width: 100%; max-width: 500px;">
-        <div class="card">
+<div class="register-container">
+    <div class="register-card-wrapper">
+        <div class="card register-card">
             <div class="card-header">
-                <h4 style="margin: 0;">Регистрация</h4>
+                <h4 class="register-title">Регистрация</h4>
             </div>
             <div class="card-body">
-                <form id="registerForm" onsubmit="return submitForm(event)" style="margin-bottom: 1.5rem;">
-                    <div style="margin-bottom: 1rem;">
-                        <label for="username" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Имя пользователя</label>
+                <form id="registerForm" class="register-form">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Имя пользователя</label>
                         <input type="text" class="form-control" id="username" name="username" required>
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Пароль</label>
+                    <div class="form-group">
+                        <label for="password" class="form-label">Пароль</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
-                    <div style="margin-bottom: 1.5rem;">
-                        <label for="confirm_password" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Подтвердите пароль</label>
+                    <div class="form-group">
+                        <label for="confirm_password" class="form-label">Подтвердите пароль</label>
                         <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Зарегистрироваться</button>
+                    <button type="submit" class="btn btn-primary register-submit-btn">Зарегистрироваться</button>
                 </form>
-                <div style="text-align: center;">
-                    <p style="margin: 0;">Уже есть аккаунт? <a href="/?action=login" style="color: var(--primary-color);">Войдите</a></p>
+                <div class="login-link-container">
+                    <p class="login-link-text">Уже есть аккаунт? <a href="/?action=login" class="login-link">Войдите</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script>
-function submitForm(e) {
-    e.preventDefault();
-    console.log("Form submitted"); // Debug log
-    
-    const formData = {
-        username: document.getElementById('username').value,
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value,
-        confirm_password: document.getElementById('confirm_password').value
-    };
-    
-    console.log("Form data:", formData); // Debug log
 
-    fetch('/registration', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => {
-        console.log("Response received:", response); // Debug log
-        console.log("Response status:", response.status); // Debug log
-        return response.json();
-    })
-    .then(data => {
-        console.log("Data received:", data); // Debug log
-        if (data.redirect) {
-            console.log("Redirecting to:", data.redirect); // Debug log
-            window.location.href = data.redirect;
-        } else {
-            console.log("No redirect found in response"); // Debug log
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Registration failed: ' + error.message);
-    });
-    
-    return false;
-}
-</script>
+<link rel="stylesheet" href="/static/css/register.css">
+<script src="/static/js/register.js"></script>
 {{end}}

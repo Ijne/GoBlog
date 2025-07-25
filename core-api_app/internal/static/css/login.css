@@ -1,0 +1,155 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+    padding: 2rem 1rem;
+    background-color: var(--light-bg);
+}
+
+.login-card-wrapper {
+    width: 100%;
+    max-width: 500px;
+}
+
+.login-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+.login-card .card-header {
+    background-color: var(--primary);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.login-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.login-card .card-body {
+    padding: 2rem;
+}
+
+.login-form {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+.login-submit-btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.login-submit-btn:hover {
+    transform: translateY(-2px);
+}
+
+.register-link-container {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-light);
+}
+
+.register-link-text {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.register-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.register-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Сообщения об ошибках */
+.error-message {
+    color: var(--danger);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: none;
+}
+
+.has-error .form-control {
+    border-color: var(--danger);
+}
+
+.has-error .error-message {
+    display: block;
+}
+
+/* Адаптивность */
+@media (max-width: 576px) {
+    .login-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .login-title {
+        font-size: 1.3rem;
+    }
+    
+    .form-control {
+        padding: 0.65rem 0.9rem;
+    }
+}

@@ -1,68 +1,30 @@
 {{define "content"}}
-<div style="display: flex; justify-content: center;">
-    <div style="width: 100%; max-width: 500px;">
-        <div class="card">
+<div class="login-container">
+    <div class="login-card-wrapper">
+        <div class="card login-card">
             <div class="card-header">
-                <h4 style="margin: 0;">Вход в систему</h4>
+                <h4 class="login-title">Вход в систему</h4>
             </div>
             <div class="card-body">
-                <form id="loginForm" onsubmit="return submitLoginForm(event)" style="margin-bottom: 1.5rem;">
-                    <div style="margin-bottom: 1rem;">
-                        <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required autofocus>
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label for="password" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Пароль</label>
+                    <div class="form-group">
+                        <label for="password" class="form-label">Пароль</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+                    <button type="submit" class="btn btn-primary login-submit-btn">Войти</button>
                 </form>
-                <div style="text-align: center;">
-                    <p style="margin: 0;">Нет аккаунта? <a href="/?action=registration" style="color: var(--primary-color);">Зарегистрируйтесь</a></p>
+                <div class="register-link-container">
+                    <p class="register-link-text">Нет аккаунта? <a href="/?action=registration" class="register-link">Зарегистрируйтесь</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script>
-function submitLoginForm(e) {
-    e.preventDefault();
-    console.log("Login form submitted"); // Debug log
-    
-    const formData = {
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value
-    };
-    
-    console.log("Login data:", formData); // Debug log
 
-    fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => {
-        console.log("Login response received:", response); // Debug log
-        console.log("Login response status:", response.status); // Debug log
-        return response.json();
-    })
-    .then(data => {
-        console.log("Login data received:", data); // Debug log
-        if (data.redirect) {
-            console.log("Redirecting to:", data.redirect); // Debug log
-            window.location.href = data.redirect;
-        } else {
-            console.log("No redirect found in response"); // Debug log
-        }
-    })
-    .catch(error => {
-        console.error('Login Error:', error);
-        alert('Login failed: ' + error.message);
-    });
-    
-    return false;
-}
-</script>
+<link rel="stylesheet" href="/static/css/login.css">
+<script src="/static/js/login.js"></script>
 {{end}}

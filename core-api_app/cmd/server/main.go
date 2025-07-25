@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -22,6 +23,12 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
+	workDir, _ := os.Getwd()
+	staticDir := filepath.Join(workDir, "internal/static")
+	fmt.Println(staticDir)
+	fs := http.FileServer(http.Dir(staticDir))
+	r.Handle("/static/*", http.StripPrefix("/static/", fs))
 
 	r.With(middlewares.CheckAuth).Handle("/", http.HandlerFunc(handlers.HomepageHandler))
 	r.Handle("/registration", http.HandlerFunc(handlers.RegisterHandler))

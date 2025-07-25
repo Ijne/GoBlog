@@ -1,0 +1,121 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+}
+
+.register-card-wrapper {
+    width: 100%;
+    max-width: 500px;
+}
+
+.register-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+}
+
+.register-card .card-header {
+    background-color: var(--primary);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.register-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.register-card .card-body {
+    padding: 2rem;
+}
+
+.register-form {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+.register-submit-btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.login-link-container {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.login-link-text {
+    margin: 0;
+    color: var(--text-light);
+}
+
+.login-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.login-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.register-card {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Адаптивность */
+@media (max-width: 576px) {
+    .register-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .register-title {
+        font-size: 1.3rem;
+    }
+    
+    .form-control {
+        padding: 0.65rem 0.9rem;
+    }
+}
