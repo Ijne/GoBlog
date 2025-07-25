@@ -3,11 +3,11 @@ package models
 import "time"
 
 type User struct {
-	ID          int32  `json:"id"`
-	Username    string `json:"name"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	Subscribers int    `json:"subscribers"`
+	ID               int32  `json:"id"`
+	Username         string `json:"name"`
+	Email            string `json:"email"`
+	Password         string `json:"password"`
+	SubscribersCount int    `json:"subscribers"`
 }
 
 type News struct {
@@ -17,4 +17,10 @@ type News struct {
 	Owner     int32     `json:"owner"`
 	OwnerNAME string    `json:"owner_name"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type Subscription struct {
+	UserID           int32  `json:"id"`
+	Username         string `json:"username"`
+	SubscribersCount int    `json:"subsribers"`
 }

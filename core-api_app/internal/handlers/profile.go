@@ -17,33 +17,47 @@ import (
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		user, err := tools.GetUserClaimsFromCookie(r)
+		preUser, err := tools.GetUserClaimsFromCookie(r)
 		if err != nil {
 			log.Println("Error getting user claims:", err)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
+		var interface_to_user interface{}
+		interface_to_user, err = storage.Get(context.Background(), preUser.ID, "user")
+		if err != nil {
+			log.Println("Error getting user claims:", err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		user := interface_to_user.(models.User)
+
 		var news interface{}
 		news, err = storage.Get(context.Background(), user.ID, "news")
 		if err != nil {
 			log.Println(err)
 			return
 		}
+
 		newsSlice, ok := news.([]models.News)
 		if !ok {
 			log.Println(err)
 			return
 		}
+
 		if len(newsSlice) == 1 && newsSlice[0].ID == 0 {
 			news = []models.News{}
 		}
 
 		var data = struct {
-			User models.User
-			News []models.News
+			User          models.User
+			News          []models.News
+			Subscriptions []models.Subscription
 		}{
-			User: user,
-			News: newsSlice,
+			User:          user,
+			News:          newsSlice,
+			Subscriptions: storage.GetUserSubsriptions(context.Background(), user.ID),
 		}
 
 		tools.RenderTemplate(w, "profile.html", data)

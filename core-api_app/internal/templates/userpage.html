@@ -7,9 +7,12 @@
                 <i class="bi bi-person-circle me-2"></i>Профиль пользователя {{.User.Username}}
             </h1>
             <div>
-                <a href="/" class="btn btn-outline-primary me-2">
-                    <i class="bi bi-house-door"></i> На главную
-                </a>
+                <div class="home-btn-container">
+                    <a href="/" class="btn btn-outline-primary home-btn">
+                        <i class="bi bi-house-door"></i> На главную
+                    </a>
+                </div>
+                {{if not .IsGuestProfile}}
                 <button id="subscribeBtn" 
                         class="btn {{if .IsSubscribed}}btn-outline-danger{{else}}btn-outline-success{{end}}"
                         data-user-id="{{.User.ID}}"
@@ -17,6 +20,8 @@
                     <i class="bi {{if .IsSubscribed}}bi-person-dash{{else}}bi-person-plus{{end}}"></i>
                     {{if .IsSubscribed}}Отписаться{{else}}Подписаться{{end}}
                 </button>
+                {{else}}
+                {{end}}
             </div>
         </div>
         <div class="profile-stats mt-3">
@@ -24,7 +29,7 @@
                 <i class="bi bi-postcard"></i> Постов: {{len .News}}
             </span>
             <span class="badge bg-light text-dark me-2">
-                <i class="bi bi-people"></i> Подписчики: <span id="subscribersCount">{{.User.Subscribers}}
+                <i class="bi bi-people"></i> Подписчики: <span id="subscribersCount">{{.User.SubscribersCount}}
             </span>
         </div>
     </div>
@@ -124,27 +129,113 @@ document.addEventListener('DOMContentLoaded', function() {
     .profile-container {
         max-width: 800px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 2rem 1rem;
     }
     
     .profile-header {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         border-left: 5px solid #0d6efd;
+        padding: 2rem !important;
+        margin-bottom: 2.5rem !important;
+    }
+    
+    .profile-header h1 {
+        margin-bottom: 1.5rem;
+        font-size: 2.2rem;
+    }
+    
+    .profile-stats {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .profile-stats .badge {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-right: 0.8rem;
+        border-radius: 50px;
+    }
+    
+    .profile-stats .badge i {
+        margin-right: 0.4rem;
+    }
+    
+    .user-posts {
+        margin-top: 3rem;
+    }
+    
+    .user-posts h3 {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
     }
     
     .post-card {
         transition: transform 0.2s;
-        border-radius: 8px;
+        border-radius: 10px;
+        margin-bottom: 1.5rem !important;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .post-card .card-body {
+        padding: 1.5rem;
     }
     
     .post-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.1);
+    }
+    
+    .post-card .card-title {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .post-card .text-muted {
+        font-size: 0.85rem;
     }
     
     .empty-posts {
         background: #f8f9fa;
         border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 3rem 1rem !important;
+    }
+    
+    .empty-posts h4 {
+        font-weight: 400;
+        font-size: 1.3rem;
+    }
+    
+    .empty-posts i {
+        opacity: 0.7;
+    }
+    
+    #subscribeBtn {
+        min-width: 140px;
+        font-weight: 500;
+    }
+
+    .profile-header {
+        position: relative;
+        padding-top: 4rem !important; /* Добавляем место сверху */
+    }
+    
+    .home-btn-container {
+        position: absolute;
+        top: 1rem;
+        left: 1.7rem;
+    }
+    
+    .home-btn { 
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 50px;
     }
 </style>
 {{end}}

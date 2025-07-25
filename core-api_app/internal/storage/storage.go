@@ -72,7 +72,7 @@ func (ur *UserRepository) Add(ctx context.Context, user models.User) (int32, err
 
 func (ur *UserRepository) Get(ctx context.Context, id int32) (models.User, error) {
 	var user models.User
-	err := ur.dbPool.QueryRow(ctx, "SELECT id, username, email, password, subscribers FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.Subscribers)
+	err := ur.dbPool.QueryRow(ctx, "SELECT id, username, email, password, subscribers FROM users WHERE id = $1", id).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.SubscribersCount)
 	if err != nil {
 		return models.User{}, fmt.Errorf("error fetching user by id: %w", err)
 	}
@@ -150,13 +150,17 @@ func GetSubscription(ctx context.Context, u_id, t_id int32) bool {
 }
 
 func AddSubscription(ctx context.Context, u_id, t_id int32) error {
-	once.Do(initDB)
-	_, err_1 := dbPool.Exec(ctx, "INSERT INTO subscriptions (subscriber_id, target_id, created_at) VALUES ($1, $2, $3)", u_id, t_id, time.Now())
-	_, err_2 := dbPool.Exec(ctx, "UPDATE users SET subscribers = subscribers + 1 WHERE id=$1", t_id)
-	if err_1 != nil {
-		return err_1
+	if u_id != t_id {
+		once.Do(initDB)
+		_, err_1 := dbPool.Exec(ctx, "INSERT INTO subscriptions (subscriber_id, target_id, created_at) VALUES ($1, $2, $3)", u_id, t_id, time.Now())
+		_, err_2 := dbPool.Exec(ctx, "UPDATE users SET subscribers = subscribers + 1 WHERE id=$1", t_id)
+		if err_1 != nil {
+			return err_1
+		}
+		return err_2
+	} else {
+		return fmt.Errorf("can't subscribe to yourself")
 	}
-	return err_2
 }
 
 func DelSubscription(ctx context.Context, u_id, t_id int32) error {
@@ -167,6 +171,21 @@ func DelSubscription(ctx context.Context, u_id, t_id int32) error {
 		return err_1
 	}
 	return err_2
+}
+
+func GetUserSubsriptions(ctx context.Context, u_id int32) []models.Subscription {
+	once.Do(initDB)
+	rows, _ := dbPool.Query(ctx, "SELECT users.id, users.username, users.subscribers FROM users JOIN subscriptions ON users.id = subscriptions.target_id WHERE subscriptions.subscriber_id=$1", u_id)
+	var subscriptions []models.Subscription
+	for rows.Next() {
+		var s models.Subscription
+		if err := rows.Scan(&s.UserID, &s.Username, &s.SubscribersCount); err != nil {
+			log.Println("can't scan")
+		}
+		subscriptions = append(subscriptions, s)
+	}
+	log.Println(u_id, rows, subscriptions)
+	return subscriptions
 }
 
 // MAIN ADD AND GET FUNCTIONS AND SPECIALS
@@ -209,7 +228,7 @@ func Del(ctx context.Context, id int32, t string) error {
 func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	once.Do(initDB)
 	var user models.User
-	err := dbPool.QueryRow(ctx, "SELECT id, username, email, password FROM users WHERE email = $1", email).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	err := dbPool.QueryRow(ctx, "SELECT id, username, email, password, subscribers FROM users WHERE email = $1", email).Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.SubscribersCount)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching user by email: %w", err)
 	}

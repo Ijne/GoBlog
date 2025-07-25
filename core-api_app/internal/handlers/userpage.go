@@ -45,13 +45,15 @@ func UserPageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		user_c := user.(models.User)
 		var data = struct {
-			User         models.User
-			News         []models.News
-			IsSubscribed bool
+			User           models.User
+			News           []models.News
+			IsSubscribed   bool
+			IsGuestProfile bool
 		}{
-			User:         user_c,
-			News:         newsSlice,
-			IsSubscribed: storage.GetSubscription(context.Background(), guest.ID, user_c.ID),
+			User:           user_c,
+			News:           newsSlice,
+			IsSubscribed:   storage.GetSubscription(context.Background(), guest.ID, user_c.ID),
+			IsGuestProfile: guest.ID == user_c.ID,
 		}
 		log.Println(storage.GetSubscription(context.Background(), guest.ID, user_c.ID))
 
