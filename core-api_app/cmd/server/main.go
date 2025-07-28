@@ -10,9 +10,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
+	"golang.org/x/net/websocket"
 
 	"github.com/Ijne/core-api_app/internal/handlers"
+	"github.com/Ijne/core-api_app/internal/kafka"
 	"github.com/Ijne/core-api_app/internal/middlewares"
+	"github.com/Ijne/core-api_app/internal/websockets"
 )
 
 func main() {
@@ -23,6 +26,8 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
+	r.With(middlewares.CheckAuth).Handle("/ws", websocket.Handler(websockets.WS_server.HandleWS))
 
 	workDir, _ := os.Getwd()
 	staticDir := filepath.Join(workDir, "internal/static")
@@ -39,7 +44,16 @@ func main() {
 	r.With(middlewares.CheckAuth).Handle("/user", http.HandlerFunc(handlers.UserPageHandler))
 	r.With(middlewares.CheckAuth).Handle("/subscribe", http.HandlerFunc(handlers.SubscribeHandler))
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), r); err != nil {
+	consumer, err := kafka.NewConsumer([]string{"localhost:9092"})
+	if err != nil {
+		panic(err)
+	}
+	defer consumer.Close()
+
+	consumer.SetupHandlers()
+	go consumer.Start()
+
+	if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", PORT), r); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
 }

@@ -188,6 +188,21 @@ func GetUserSubsriptions(ctx context.Context, u_id int32) []models.Subscription 
 	return subscriptions
 }
 
+func GetSubscribersID(ctx context.Context, u_id int32) []int32 {
+	once.Do(initDB)
+	rows, _ := dbPool.Query(ctx, "SELECT subscriber_id FROM subscriptions WHERE target_id=$1", u_id)
+	var subscribers []int32
+	for rows.Next() {
+		var s_id int32
+		if err := rows.Scan(&s_id); err != nil {
+			log.Println("can't scan subscriber id:", err)
+		}
+		subscribers = append(subscribers, s_id)
+	}
+	log.Println(u_id, rows, subscribers)
+	return subscribers
+}
+
 // MAIN ADD AND GET FUNCTIONS AND SPECIALS
 func Add(ctx context.Context, data interface{}) (int32, error) {
 	once.Do(initDB)

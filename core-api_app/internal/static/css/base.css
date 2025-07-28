@@ -83,6 +83,30 @@ body {
     background-color: var(--primary);
 }
 
+.notification-icon {
+    display: inline-block;
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -3px;       /* Поднимаем выше */
+    right: -5px;     /* Сдвигаем левее от края */
+    width: 16px;     /* Уменьшаем размер */
+    height: 16px;    /* Уменьшаем размер */
+    font-size: 0.6rem;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    border: 2px solid white; /* Добавляем белую границу */
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1); /* Небольшая тень */
+}
+
 /* Основной контент */
 .main {
     flex: 1;

@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Ijne/core-api_app/internal/kafka"
 	"github.com/Ijne/core-api_app/internal/models"
 	"github.com/Ijne/core-api_app/internal/storage"
 	"github.com/Ijne/core-api_app/internal/tools"
@@ -89,7 +90,23 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		w.Header().Set("Content-type", "application/json")
+		producer, err := kafka.NewProducer([]string{"localhost:9092"})
+		if err != nil {
+			panic(err)
+		}
+		defer producer.Close()
+
+		event := map[string]interface{}{
+			"event_type": "new_post",
+			"body": map[string]interface{}{
+				"from":       user.ID,
+				"title":      news.Title,
+				"created_at": news.CreatedAt,
+			},
+		}
+		eventJSON, _ := json.Marshal(event)
+		producer.Send("notifications", nil, eventJSON)
+
 		var data = struct{}{}
 		json.NewEncoder(w).Encode(data)
 		log.Println("Sucssesfully created news with id:", id)

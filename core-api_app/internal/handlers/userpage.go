@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Ijne/core-api_app/internal/kafka"
 	"github.com/Ijne/core-api_app/internal/models"
 	"github.com/Ijne/core-api_app/internal/storage"
 	"github.com/Ijne/core-api_app/internal/tools"
@@ -86,6 +87,24 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 			if err := storage.AddSubscription(context.Background(), user.ID, data.TargetID); err != nil {
 				log.Fatal(err)
 			}
+
+			producer, err := kafka.NewProducer([]string{"localhost:9092"})
+			if err != nil {
+				panic(err)
+			}
+			defer producer.Close()
+
+			event := map[string]interface{}{
+				"event_type": "subscribe",
+				"body": map[string]interface{}{
+					"from": user.ID,
+					"to":   data.TargetID,
+				},
+			}
+
+			eventJSON, _ := json.Marshal(event)
+			producer.Send("notifications", nil, eventJSON)
+
 			var data = struct{}{}
 			json.NewEncoder(w).Encode(data)
 			log.Println("Sucssesfully subscribed!")
