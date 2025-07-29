@@ -37,7 +37,7 @@ func (s *WSServer) HandleWS(ws *websocket.Conn) {
 	s.clients[user.ID] = &Client{ws}
 	s.mu.Unlock()
 
-	log.Printf("Новое подключение: %s", ws.RemoteAddr())
+	log.Printf("Новое подключение: %s %s", ws.RemoteAddr(), ws.Request().UserAgent())
 
 	defer func() {
 		s.mu.Lock()

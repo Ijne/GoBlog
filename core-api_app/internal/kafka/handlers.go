@@ -58,8 +58,10 @@ func (c *Consumer) SetupHandlers() {
 				return err
 			}
 
-			for id := range storage.GetSubscribersID(context.Background(), body["id_from"].(int32)) {
-				websockets.WS_server.Broadcast(string(jsonData), int32(id))
+			xuid := body["id_from"].(float64)
+			id := int32(xuid)
+			for _, i := range storage.GetSubscribersID(context.Background(), id) {
+				websockets.WS_server.Broadcast(string(jsonData), int32(i))
 			}
 		}
 
