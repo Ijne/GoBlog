@@ -2,18 +2,27 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/Ijne/notifications_app/internal/kafka"
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+	PORT := os.Getenv("PORT")
+	KAFKA_HOST := os.Getenv("KAFKA_HOST")
+
 	r := chi.NewRouter()
 
 	fmt.Println("1")
 
-	consumer, err := kafka.NewConsumer([]string{"localhost:9092"})
+	consumer, err := kafka.NewConsumer([]string{fmt.Sprintf("%s:9092", KAFKA_HOST)})
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +33,7 @@ func main() {
 
 	fmt.Println("2")
 
-	if err := http.ListenAndServe("0.0.0.0:8070", r); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", PORT), r); err != nil {
 		panic(err)
 	}
 }

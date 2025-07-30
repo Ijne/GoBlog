@@ -27,12 +27,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if data.Password != data.ConfirmPassword {
-			log.Println("Passwords do not match")
-			http.Error(w, "Passwords do not match", http.StatusForbidden)
-			return
-		}
-
 		password, err := tools.PasswordToHash(data.Password)
 		if err != nil {
 			log.Println("Error hashing password:", err)

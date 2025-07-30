@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/Ijne/core-api_app/internal/models"
 	"github.com/Ijne/core-api_app/internal/storage"
 	"github.com/Ijne/core-api_app/internal/tools"
+	"github.com/joho/godotenv"
 )
 
 func ProfileHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +92,12 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		producer, err := kafka.NewProducer([]string{"localhost:9092"})
+		if err := godotenv.Load(); err != nil {
+			log.Fatalf("Error loading .env file: %v", err)
+		}
+		KAFKA_HOST := os.Getenv("KAFKA_HOST")
+
+		producer, err := kafka.NewProducer([]string{fmt.Sprintf("%s:9092", KAFKA_HOST)})
 		if err != nil {
 			panic(err)
 		}

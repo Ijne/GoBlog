@@ -1,0 +1,59 @@
+services:
+  core-api:
+    build:
+      context: .
+      dockerfile: ./core-api_app/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./core-api_app:/app
+    depends_on:
+      - notifications
+      - kafka
+      - postgres
+
+  notifications:
+    build:
+      context: .
+      dockerfile: ./notifications_app/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - APP_ENV=development
+    volumes:
+      - ./notifications_app:/app
+    depends_on:
+      - kafka
+
+  kafka:
+    image: apache/kafka:latest
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_KRAFT_CLUSTER_ID: "5L6g3nShT-eMCtK--X86sw"
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+    volumes:
+      - ./kraft-logs:/tmp/kraft-combined-logs
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: mainDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./postgres/backups/:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mainDB"]
+      interval: 3s
+      timeout: 3s
+      retries: 10

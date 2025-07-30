@@ -3,14 +3,17 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/Ijne/core-api_app/internal/kafka"
 	"github.com/Ijne/core-api_app/internal/models"
 	"github.com/Ijne/core-api_app/internal/storage"
 	"github.com/Ijne/core-api_app/internal/tools"
+	"github.com/joho/godotenv"
 )
 
 func UserPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +91,12 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 				log.Fatal(err)
 			}
 
-			producer, err := kafka.NewProducer([]string{"localhost:9092"})
+			if err := godotenv.Load(); err != nil {
+				log.Fatalf("Error loading .env file: %v", err)
+			}
+			KAFKA_HOST := os.Getenv("KAFKA_HOST")
+
+			producer, err := kafka.NewProducer([]string{fmt.Sprintf("%s:9092", KAFKA_HOST)})
 			if err != nil {
 				panic(err)
 			}

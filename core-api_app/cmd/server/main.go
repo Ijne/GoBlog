@@ -23,6 +23,7 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 	PORT := os.Getenv("PORT")
+	KAFKA_HOST := os.Getenv("KAFKA_HOST")
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -44,7 +45,7 @@ func main() {
 	r.With(middlewares.CheckAuth).Handle("/user", http.HandlerFunc(handlers.UserPageHandler))
 	r.With(middlewares.CheckAuth).Handle("/subscribe", http.HandlerFunc(handlers.SubscribeHandler))
 
-	consumer, err := kafka.NewConsumer([]string{"localhost:9092"})
+	consumer, err := kafka.NewConsumer([]string{fmt.Sprintf("%s:9092", KAFKA_HOST)})
 	if err != nil {
 		panic(err)
 	}

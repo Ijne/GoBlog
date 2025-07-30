@@ -1,7 +1,7 @@
-FROM debian:bookworm-slim
+FROM golang:1.24.5
 
 WORKDIR /app
-COPY app.exe /app/server
-COPY .env /app/.env
-EXPOSE 8080
-ENTRYPOINT [ "/app/server" ]
+
+COPY core-api_app/ .
+
+CMD ["go", "run", "cmd/server/main.go"]
