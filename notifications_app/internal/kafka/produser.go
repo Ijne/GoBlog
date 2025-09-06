@@ -2,9 +2,12 @@ package kafka
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/IBM/sarama"
+	"github.com/joho/godotenv"
 )
 
 type Producer struct {
@@ -51,8 +54,13 @@ func (p *Producer) Close() error {
 }
 
 func SendMessage(body map[string]interface{}) {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+	KAFKA_HOST := os.Getenv("KAFKA_HOST")
+
 	log.Println("SendMessage")
-	producer, err := NewProducer([]string{"localhost:9092"})
+	producer, err := NewProducer([]string{fmt.Sprintf("%s:9092", KAFKA_HOST)})
 	if err != nil {
 		panic(err)
 	}

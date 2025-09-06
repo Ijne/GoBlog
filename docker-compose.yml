@@ -11,6 +11,12 @@ services:
       - notifications
       - kafka
       - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 15s
+      timeout: 30s
+      retries: 1
+      start_period: 30s
 
   notifications:
     build:
@@ -24,23 +30,27 @@ services:
       - ./notifications_app:/app
     depends_on:
       - kafka
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081"]
+      interval: 15s
+      timeout: 30s
+      retries: 1
+      start_period: 30s
 
   kafka:
-    image: apache/kafka:latest
+    image: bitnami/kafka:latest
     ports:
       - "9092:9092"
       - "9093:9093"
     environment:
-      KAFKA_KRAFT_CLUSTER_ID: "5L6g3nShT-eMCtK--X86sw"
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: "controller,broker"
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
-      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
-      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
-    volumes:
-      - ./kraft-logs:/tmp/kraft-combined-logs
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
 
   postgres:
     image: postgres:latest
