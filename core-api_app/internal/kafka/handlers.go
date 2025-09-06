@@ -23,7 +23,7 @@ func (c *Consumer) SetupHandlers() {
 			return err
 		}
 
-		fmt.Println(event)
+		fmt.Println(event, "From handlers")
 
 		body := event.Body
 		xuid := body["id_from"].(float64)
@@ -46,6 +46,7 @@ func (c *Consumer) SetupHandlers() {
 			xuid := body["id_to"].(float64)
 			id := int32(xuid)
 			websockets.WS_server.Broadcast(string(jsonData), id)
+			fmt.Println("Sent from handlers type subscribe")
 		case "new_post":
 			data := map[string]interface{}{
 				"title":   fmt.Sprintf(body["title"].(string), user.Username),

@@ -8,4 +8,4 @@ COPY static/ /usr/share/nginx/html/static/
 
 COPY html/ /usr/share/nginx/html/
 
-EXPOSE 82
+EXPOSE 80
