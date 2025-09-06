@@ -46,5 +46,6 @@
 git clone https://github.com/Ijne/GoBlog.git
 # Из GoBlog
 docker compose -f 'docker-compose.yml' up -d --build
+# Первый запуск может занять 1-2 минуты, затем ~30 секунд
 
 
