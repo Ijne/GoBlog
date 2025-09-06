@@ -9,8 +9,8 @@ services:
       - ./core-api_app:/app
     depends_on:
       - notifications
-      - kafka
       - postgres
+      - kafka
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 15s
