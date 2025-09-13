@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	//time.Sleep(30 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
