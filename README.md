@@ -8,44 +8,43 @@
 ![Kafka](https://img.shields.io/badge/Kafka-Broker-lightgrey?logo=apachekafka)
 ![WS](https://img.shields.io/badge/WS-RealTime-lightgrey?logo=websocket)
 
-**GoBlog** — это высокопроизводительный бэкенд для блоговой платформы, написанный на **Go** с использованием **PostgreSQL** и **Kafka**. Проект создан в учебных целях, но реализован с применением production-ready практик.
+**GoBlog** is a high-performance backend for a blogging platform built in **Go** using **PostgreSQL** and **Kafka**. The project was created for educational purposes but implements production-ready practices.
 
 ---
 
-## 🔥 Особенности
+## 🔥 Features
 
-✅ **REST API** для управления постами, пользователями и аутентификацией
-✅ **МИКРОСЕРВИСНАЯ АРХИТЕКТУРА** логика работы с уведомлениями, вынесена в отдельный сервис
-✅ **JWT-аутентификация** с защищёнными роутами
-✅ **PostgreSQL** для надёжного хранения данных
-✅ **Kafka** для свзяи между сервисами
-✅ **Websockets** для получения уведомлений в реальном времени
-✅ **Middleware** (логирование, JWT-валидация)
-✅ **Конфигурация через `.env`**
-✅ **Чистая архитектура** (разделение на handlers, models, storage)
+✅ **REST API** for managing posts, users, and authentication  
+✅ **MICROSERVICE ARCHITECTURE** - notification logic is separated into a dedicated service  
+✅ **JWT authentication** with protected routes  
+✅ **PostgreSQL** for reliable data storage  
+✅ **Kafka** for inter-service communication  
+✅ **WebSockets** for real-time notifications  
+✅ **Middleware** (logging, JWT validation)  
+✅ **Configuration via `.env`**  
+✅ **Clean architecture** (separation into handlers, models, storage)  
 
 ---
 
 ![](pictures/image2.png)
 
-## 🛠 Технологии
+## 🛠 Technologies
 
-- **Язык**: Go   
-- **База данных**: PostgreSQL 
-- **Аутентификация**: JWT  
-- **Брокер сообщений**: Kafka
-- **Конфигурация**: `.env`
+- **Language**: Go  
+- **Database**: PostgreSQL  
+- **Authentication**: JWT  
+- **Message Broker**: Kafka  
+- **Configuration**: `.env`  
 
 ---
 
 ![](pictures/image3.png)
 
-## 🚀 Быстрый старт
+## 🚀 Quick Start
 
 ```bash
 git clone https://github.com/Ijne/GoBlog.git
-# Из GoBlog
+# From GoBlog directory
 docker compose -f 'docker-compose.yml' up -d --build
-# Первый запуск может занять 1-2 минуты, затем ~30 секунд
-
-
+# First launch may take 1-2 minutes, subsequent launches ~30 seconds
+```
