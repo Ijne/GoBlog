@@ -30,7 +30,8 @@ CREATE TABLE public.news (
     title text NOT NULL,
     body text NOT NULL,
     owner integer NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    img text NOT NULL DEFAULT ''
 );
 
 

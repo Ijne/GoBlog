@@ -2,9 +2,6 @@
 document.getElementById('createPostForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const responseDiv = document.getElementById('postResponse');
-    responseDiv.innerHTML = '';
-    
     try {
         const response = await fetch('/news', {
             method: 'POST',
@@ -27,11 +24,6 @@ document.getElementById('createPostForm')?.addEventListener('submit', async (e) 
             throw new Error(errorData.error || 'Ошибка сервера');
         }
     } catch (error) {
-        responseDiv.innerHTML = `
-            <div class="alert alert-danger">
-                Ошибка: ${error.message}
-            </div>
-        `;
     }
 });
 

@@ -17,6 +17,7 @@ type News struct {
 	Owner     int32     `json:"owner"`
 	OwnerNAME string    `json:"owner_name"`
 	CreatedAt time.Time `json:"created_at"`
+	Image     string    `json:"img"`
 }
 
 type Subscription struct {

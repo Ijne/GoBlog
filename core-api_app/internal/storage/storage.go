@@ -106,7 +106,7 @@ func (nr *NewsRepository) Get(ctx context.Context, id int32) ([]models.News, err
 	if id == 0 {
 		rows, err = nr.dbPool.Query(ctx, "SELECT n.*, u.username AS owner_name FROM  news n, LATERAL (SELECT username FROM users WHERE id = n.owner) u ORDER BY created_at DESC")
 	} else {
-		rows, err = nr.dbPool.Query(ctx, "SELECT id, title, body, created_at FROM news WHERE owner = $1 ORDER BY created_at DESC", id)
+		rows, err = nr.dbPool.Query(ctx, "SELECT id, title, body, created_at, img FROM news WHERE owner = $1 ORDER BY created_at DESC", id)
 	}
 	if err != nil {
 		return []models.News{}, fmt.Errorf("error fetching user by id: %w", err)
@@ -114,11 +114,11 @@ func (nr *NewsRepository) Get(ctx context.Context, id int32) ([]models.News, err
 	for rows.Next() {
 		var n models.News
 		if id == 0 {
-			if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.Owner, &n.CreatedAt, &n.OwnerNAME); err != nil {
+			if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.Owner, &n.CreatedAt, &n.Image, &n.OwnerNAME); err != nil {
 				log.Println("Error with scanning news:", err)
 			}
 		} else {
-			if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.CreatedAt); err != nil {
+			if err := rows.Scan(&n.ID, &n.Title, &n.Body, &n.CreatedAt, &n.Image); err != nil {
 				log.Println("Error with scanning news:", err)
 			}
 		}

@@ -38,7 +38,7 @@ services:
       start_period: 30s
 
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnamilegacy/kafka:latest
     ports:
       - "9092:9092"
       - "9093:9093"

@@ -63,6 +63,8 @@ func ProfileHandler(w http.ResponseWriter, r *http.Request) {
 			Subscriptions: storage.GetUserSubsriptions(context.Background(), user.ID),
 		}
 
+		log.Println("mafaka")
+
 		tools.RenderTemplate(w, "profile.html", data)
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -78,6 +80,7 @@ func NewsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
+		log.Println(news, "from news handler")
 		user, err := tools.GetUserClaimsFromCookie(r)
 		if err != nil {
 			log.Println(err)

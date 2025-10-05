@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Ijne/notifications_app/internal/kafka"
 	"github.com/go-chi/chi/v5"
@@ -12,7 +13,7 @@ import (
 )
 
 func main() {
-	//time.Sleep(30 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
