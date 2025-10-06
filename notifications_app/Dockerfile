@@ -2,6 +2,10 @@ FROM golang:1.25.1
 
 WORKDIR /app
 
-COPY ./notifications_app .
+# Копируем весь проект сохраняя структуру
+COPY ./ ./
 
-CMD ["go", "run", "notifications_app/cmd/server/main.go"]
+RUN go mod download
+RUN go build -o main cmd/server/main.go
+
+CMD ["./main"]
