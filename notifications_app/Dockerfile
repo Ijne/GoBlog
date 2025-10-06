@@ -4,4 +4,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["go", "run", "notifications/cmd/server/main.go"]
+CMD ["go", "run", "notifications_app/cmd/server/main.go"]
