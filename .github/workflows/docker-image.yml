@@ -21,14 +21,15 @@ jobs:
         cd core-api_app
         go test ./...
 
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
+build:
+  runs-on: ubuntu-latest
+  steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
+    
+    - name: Clean up existing Docker containers
       run: |
-        docker compose -f 'docker-compose.yml' up -d --build
-        docker-compose down
-        docker-compose up --force-recreate --build -d
+        docker compose -f 'docker-compose.yml' down --remove-orphans
+    
+    - name: Build and start containers
+      run: |
+        docker compose -f 'docker-compose.yml' up --force-recreate --build -d
