@@ -7,5 +7,6 @@ COPY ./ ./
 
 RUN go mod download
 RUN go build -o main cmd/server/main.go
+RUN ls
 
 CMD ["app/main"]
