@@ -28,4 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker compose -f 'docker-compose.yml' up -d --build
+      run: |
+        docker compose -f 'docker-compose.yml' up -d --build
+        docker-compose down
+        docker-compose up --force-recreate --build -d
