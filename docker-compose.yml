@@ -47,8 +47,6 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-    volumes:
-      - kafka_data:/bitnami/kafka
 
   postgres:
     image: postgres:latest
@@ -56,8 +54,6 @@ services:
       POSTGRES_DB: mainDB
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     healthcheck:
@@ -65,7 +61,3 @@ services:
       interval: 3s
       timeout: 3s
       retries: 10
-
-volumes:
-  postgres_data:
-  kafka_data:
