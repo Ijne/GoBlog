@@ -8,4 +8,4 @@ COPY ./ ./
 RUN go mod download
 RUN go build -o main cmd/server/main.go
 
-CMD ["./main"]
+CMD ["app/main"]
