@@ -4,4 +4,4 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["go", "run", "cmd/server/main.go"]
+CMD ["go", "run", "core-api_app/cmd/server/main.go"]
