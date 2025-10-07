@@ -1,5 +1,6 @@
 services:
   core-api:
+    container_name: core-api
     build:
       context: core-api_app
       dockerfile: Dockerfile
@@ -17,6 +18,7 @@ services:
       start_period: 30s
 
   notifications:
+    container_name: notifications
     build:
       context: notifications_app
       dockerfile: Dockerfile
@@ -35,6 +37,7 @@ services:
 
   kafka:
     image: bitnamilegacy/kafka:latest
+    container_name: kafka-container
     ports:
       - "9092:9092"
       - "9093:9093"
@@ -50,6 +53,7 @@ services:
 
   postgres:
     image: postgres:latest
+    container_name: postgres-container
     environment:
       POSTGRES_DB: mainDB
       POSTGRES_USER: postgres
