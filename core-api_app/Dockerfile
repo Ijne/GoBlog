@@ -2,6 +2,12 @@ FROM golang:1.25.1
 
 WORKDIR /app
 
-COPY core-api_app/ .
+COPY . .
 
-CMD ["go", "run", "cmd/server/main.go"]
+RUN ls
+
+RUN go build -o main cmd/server/main.go
+
+RUN ls
+
+CMD ["./main"]

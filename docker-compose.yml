@@ -1,12 +1,10 @@
 services:
   core-api:
     build:
-      context: .
-      dockerfile: ./core-api_app/Dockerfile
+      context: core-api_app
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-    volumes:
-      - ./core-api_app:/app
+      - "8080:8080" 
     depends_on:
       - notifications
       - postgres
@@ -20,14 +18,12 @@ services:
 
   notifications:
     build:
-      context: .
-      dockerfile: ./notifications_app/Dockerfile
+      context: notifications_app
+      dockerfile: Dockerfile
     ports:
       - "8081:8081"
     environment:
       - APP_ENV=development
-    volumes:
-      - ./notifications_app:/app
     depends_on:
       - kafka
     healthcheck:
@@ -58,8 +54,6 @@ services:
       POSTGRES_DB: mainDB
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    volumes:
-      - ./postgres/backups/:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
     healthcheck:
