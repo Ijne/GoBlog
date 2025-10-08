@@ -6,8 +6,4 @@ COPY . .
 
 RUN ls
 
-RUN go build -o main cmd/server/main.go
-
-RUN ls
-
-CMD ["./main"]
+CMD ["go", "run", "cmd/server/main.go"]
