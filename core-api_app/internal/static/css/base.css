@@ -116,6 +116,8 @@ body {
 .container {
     max-width: var(--max-width);
     margin: 0 auto;
+    margin-left: 30%;
+    margin-right: 30%;
     width: 100%;
 }
 
